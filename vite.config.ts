@@ -333,6 +333,7 @@ function geminiServerPlugin(): Plugin {
 
 export default defineConfig(() => {
   return {
+    base: './',
     plugins: [react(), tailwindcss(), geminiServerPlugin()],
     resolve: {
       alias: {
