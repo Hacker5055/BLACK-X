@@ -1,0 +1,8 @@
+{
+  "name": "Remix Mawared HR - نظام إدارة الموارد البشرية الذكي",
+  "description": "نظام متكامل لإدارة الموارد البشرية، تتبع الحضور، الرواتب، تقييم الأداء، التحليلات المتقدمة مع تكامل Google Tasks و Google Chat و Gemini AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Official High-Contrast Black & White Printable Document Styles
+   ========================================================================== */
+
+@media print {
+  /* Hide all interactive, navigation, and non-printable UI elements */
+  .print\:hidden,
+  button,
+  nav,
+  aside,
+  header,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Force entire page into high-contrast monochrome for formal official printing */
+  html,
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    filter: grayscale(100%) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Reset document containers for full paper page utilization */
+  [data-pdf-content],
+  .printable-official-doc {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 12mm 10mm !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Ensure text elements are pure black for maximum legibility and ink density */
+  h1, h2, h3, h4, h5, h6, p, span, strong, td, th, li, label, div {
+    color: #000000 !important;
+    text-shadow: none !important;
+  }
+
+  /* Formal sharp borders for tables, frames, and badges */
+  table, tr, td, th, hr, .border, [class*="border-"] {
+    border-color: #1a1a1a !important;
+  }
+
+  /* Clean subtle grey backgrounds for table headers in black and white */
+  thead, th, .bg-slate-50, .bg-slate-100, .bg-emerald-50, .bg-rose-50, .bg-indigo-50 {
+    background-color: #f1f5f9 !important;
+  }
+
+  /* Crisp monochrome official seals and stamps */
+  .official-seal {
+    border-color: #000000 !important;
+    color: #000000 !important;
+    filter: contrast(150%) !important;
+  }
+}

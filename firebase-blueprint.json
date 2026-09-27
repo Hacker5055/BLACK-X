@@ -1,0 +1,206 @@
+{
+  "entities": {
+    "Employee": {
+      "title": "Employee",
+      "description": "Employee profile and employment details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "employeeCode": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "department": { "type": "string" },
+        "jobTitle": { "type": "string" },
+        "basicSalary": { "type": "number" },
+        "housingAllowance": { "type": "number" },
+        "transportAllowance": { "type": "number" },
+        "otherAllowances": { "type": "number" },
+        "hireDate": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "on_leave", "terminated"] },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "employeeCode", "fullName", "email", "department", "jobTitle", "basicSalary", "status"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Daily employee attendance record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "employeeId": { "type": "string" },
+        "employeeName": { "type": "string" },
+        "date": { "type": "string" },
+        "checkInTime": { "type": "string" },
+        "checkOutTime": { "type": "string" },
+        "workHours": { "type": "number" },
+        "overtimeHours": { "type": "number" },
+        "status": { "type": "string", "enum": ["present", "late", "absent", "leave", "half_day"] },
+        "location": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "employeeId", "date", "status"]
+    },
+    "LeaveRequest": {
+      "title": "LeaveRequest",
+      "description": "Employee time-off and leave application",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "employeeId": { "type": "string" },
+        "employeeName": { "type": "string" },
+        "leaveType": { "type": "string", "enum": ["annual", "sick", "unpaid", "emergency", "maternity", "paternity"] },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "days": { "type": "number" },
+        "reason": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "actionNotes": { "type": "string" },
+        "reviewedBy": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "employeeId", "leaveType", "startDate", "endDate", "days", "status"]
+    },
+    "Payroll": {
+      "title": "Payroll",
+      "description": "Monthly payroll generation record for an employee",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "month": { "type": "string" },
+        "employeeId": { "type": "string" },
+        "employeeName": { "type": "string" },
+        "department": { "type": "string" },
+        "basicSalary": { "type": "number" },
+        "housingAllowance": { "type": "number" },
+        "transportAllowance": { "type": "number" },
+        "overtimePay": { "type": "number" },
+        "bonus": { "type": "number" },
+        "gosiDeduction": { "type": "number" },
+        "absenceDeduction": { "type": "number" },
+        "otherDeductions": { "type": "number" },
+        "netSalary": { "type": "number" },
+        "status": { "type": "string", "enum": ["draft", "approved", "paid"] },
+        "paymentMethod": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "month", "employeeId", "basicSalary", "netSalary", "status"]
+    },
+    "Evaluation": {
+      "title": "Evaluation",
+      "description": "Employee performance review and appraisal",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "employeeId": { "type": "string" },
+        "employeeName": { "type": "string" },
+        "period": { "type": "string" },
+        "productivityScore": { "type": "number" },
+        "qualityScore": { "type": "number" },
+        "punctualityScore": { "type": "number" },
+        "teamworkScore": { "type": "number" },
+        "innovationScore": { "type": "number" },
+        "overallScore": { "type": "number" },
+        "strengths": { "type": "string" },
+        "areasForImprovement": { "type": "string" },
+        "goals": { "type": "string" },
+        "aiSummary": { "type": "string" },
+        "evaluatorName": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "submitted", "finalized"] },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "employeeId", "period", "overallScore", "status"]
+    },
+    "HRTask": {
+      "title": "HRTask",
+      "description": "Administrative task and Google Tasks synchronized item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "assignedTo": { "type": "string" },
+        "dueDate": { "type": "string" },
+        "priority": { "type": "string", "enum": ["low", "medium", "high", "urgent"] },
+        "status": { "type": "string", "enum": ["pending", "in_progress", "completed"] },
+        "googleTaskId": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "status", "priority"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "System alert and instant updates",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["info", "success", "warning", "payroll", "leave"] },
+        "read": { "type": "boolean" },
+        "link": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "message", "type", "read"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "System audit and security event log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "action": { "type": "string" },
+        "performedBy": { "type": "string" },
+        "details": { "type": "string" },
+        "ip": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "action", "performedBy", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/employees/{employeeId}": {
+      "schema": "Employee",
+      "description": "Collection of employee profiles"
+    },
+    "/attendance/{attendanceId}": {
+      "schema": "Attendance",
+      "description": "Daily employee attendance and time tracking records"
+    },
+    "/leaves/{leaveId}": {
+      "schema": "LeaveRequest",
+      "description": "Employee leave and vacation requests"
+    },
+    "/payrolls/{payrollId}": {
+      "schema": "Payroll",
+      "description": "Monthly payroll generation documents"
+    },
+    "/evaluations/{evaluationId}": {
+      "schema": "Evaluation",
+      "description": "Performance reviews and KPI ratings"
+    },
+    "/tasks/{taskId}": {
+      "schema": "HRTask",
+      "description": "HR department administrative and synchronized tasks"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "System and user notifications"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Security audit log entries for operational compliance"
+    }
+  }
+}

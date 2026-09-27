@@ -1,0 +1,173 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global hardened primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'mz3443mmz@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Validation helpers
+    function isValidEmployee(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.employeeCode is string && data.employeeCode.size() <= 64 &&
+             data.fullName is string && data.fullName.size() <= 128 &&
+             data.email is string && data.email.size() <= 128 &&
+             data.department is string && data.department.size() <= 100 &&
+             data.jobTitle is string && data.jobTitle.size() <= 100 &&
+             data.basicSalary is number && data.basicSalary >= 0 &&
+             data.status in ['active', 'on_leave', 'terminated'];
+    }
+
+    function isValidAttendance(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.employeeId is string && data.employeeId.size() <= 128 &&
+             data.date is string && data.date.size() <= 20 &&
+             data.status in ['present', 'late', 'absent', 'leave', 'half_day'];
+    }
+
+    function isValidLeave(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.employeeId is string && data.employeeId.size() <= 128 &&
+             data.leaveType in ['annual', 'sick', 'unpaid', 'emergency', 'maternity', 'paternity'] &&
+             data.startDate is string && data.startDate.size() <= 20 &&
+             data.endDate is string && data.endDate.size() <= 20 &&
+             data.days is number && data.days > 0 &&
+             data.status in ['pending', 'approved', 'rejected'];
+    }
+
+    function isValidPayroll(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.month is string && data.month.size() <= 32 &&
+             data.employeeId is string && data.employeeId.size() <= 128 &&
+             data.basicSalary is number && data.basicSalary >= 0 &&
+             data.netSalary is number && data.netSalary >= 0 &&
+             data.status in ['draft', 'approved', 'paid'];
+    }
+
+    function isValidEvaluation(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.employeeId is string && data.employeeId.size() <= 128 &&
+             data.period is string && data.period.size() <= 64 &&
+             data.overallScore is number && data.overallScore >= 0 && data.overallScore <= 100 &&
+             data.status in ['draft', 'submitted', 'finalized'];
+    }
+
+    function isValidTask(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.title is string && data.title.size() <= 200 &&
+             data.status in ['pending', 'in_progress', 'completed'] &&
+             data.priority in ['low', 'medium', 'high', 'urgent'];
+    }
+
+    function isValidNotification(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.title is string && data.title.size() <= 200 &&
+             data.message is string && data.message.size() <= 1000 &&
+             data.type in ['info', 'success', 'warning', 'payroll', 'leave'] &&
+             data.read is bool;
+    }
+
+    function isValidAuditLog(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.action is string && data.action.size() <= 128 &&
+             data.performedBy is string && data.performedBy.size() <= 128 &&
+             data.createdAt is string && data.createdAt.size() <= 50;
+    }
+
+    // Admins Collection
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Employees Collection
+    match /employees/{employeeId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(employeeId) && isValidEmployee(incoming());
+      allow update: if isSignedIn() && isValidId(employeeId) && isValidEmployee(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Attendance Collection
+    match /attendance/{attendanceId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(attendanceId) && isValidAttendance(incoming());
+      allow update: if isSignedIn() && isValidId(attendanceId) && isValidAttendance(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Leaves Collection
+    match /leaves/{leaveId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(leaveId) && isValidLeave(incoming());
+      allow update: if isSignedIn() && isValidId(leaveId) && isValidLeave(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Payrolls Collection
+    match /payrolls/{payrollId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(payrollId) && isValidPayroll(incoming());
+      allow update: if isSignedIn() && isValidId(payrollId) && isValidPayroll(incoming()) && (
+        existing().status != 'paid' || isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Evaluations Collection
+    match /evaluations/{evaluationId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(evaluationId) && isValidEvaluation(incoming());
+      allow update: if isSignedIn() && isValidId(evaluationId) && isValidEvaluation(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Tasks Collection
+    match /tasks/{taskId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(taskId) && isValidTask(incoming());
+      allow update: if isSignedIn() && isValidId(taskId) && isValidTask(incoming());
+      allow delete: if isSignedIn();
+    }
+
+    // Notifications Collection
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(notificationId) && isValidNotification(incoming());
+      allow update: if isSignedIn() && isValidId(notificationId) && isValidNotification(incoming());
+      allow delete: if isSignedIn();
+    }
+
+    // Audit Logs Collection (Append-only)
+    match /auditLogs/{logId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(logId) && isValidAuditLog(incoming());
+      allow update, delete: if false; // Immutable audit logs
+    }
+  }
+}
